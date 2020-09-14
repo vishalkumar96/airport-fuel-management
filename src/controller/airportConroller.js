@@ -42,6 +42,7 @@ exports.transaction = async(req, res, next) => {
         '${transaction_date_time}', '${transaction_id_parent}');`;
         
         const result = await db.query(connection, query);
+
         const airPortData = await db.query(connection, `select fuel_available from airport where airport_id = ${airport_id}`);
 
         if(transaction_type.toLowerCase() == 'in' ) {
@@ -54,7 +55,7 @@ exports.transaction = async(req, res, next) => {
             await db.query(connection, `update airport set fuel_available = ${fuel_available} where airport_id = ${airport_id}`);
         }
         
-        return res.status(201).json({ 'msg': 'airport list fetched successfully', status: 'success', transaction_id: result.insertId })
+        return res.status(201).json({ 'msg': 'airport fuel transaction added successfully', status: 'success', transaction_id: result.insertId })
 
     } catch (err) {
         console.log(err);
@@ -73,7 +74,7 @@ exports.airportTransactionDetail = async (req, res, next) => {
         const query = `select * from airport`;
         
         const result = await db.query(connection, query);
-        if(result.length) {
+        if(result && result.length) {
             let transactionDetail = await db.query(connection, `select * from transaction where airport_id = ${airport_id}` );
             return res.status(200).json({ 'msg': 'airport list fetched successfully', status: 'success', data: transactionDetail })
         } else {
@@ -81,6 +82,6 @@ exports.airportTransactionDetail = async (req, res, next) => {
 
         }
     } catch (err) {
-        return next(new ApiError('Error occured while fetching airport', 400));
+        return next(new ApiError('Error occured while fetching airport transaction detail', 400));
     }
 }
