@@ -74,7 +74,7 @@ exports.airportTransactionDetail = async (req, res, next) => {
         
         const result = await db.query(connection, query);
         if(result.length) {
-            let transactionDetail = await db.query(connection, `select * from  where airport` );
+            let transactionDetail = await db.query(connection, `select * from transaction where airport_id = ${airport_id}` );
             return res.status(200).json({ 'msg': 'airport list fetched successfully', status: 'success', data: transactionDetail })
         } else {
             return res.status(400).json({ 'msg': 'airport id does not exist', status: 'error'})
