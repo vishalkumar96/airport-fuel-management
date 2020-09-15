@@ -3,6 +3,6 @@ const router = express.Router();
 const userConroller = require('../controller/userController');
 
 
-router.route('/transaction').post(userConroller.login);
+router.route('/login').post(userConroller.login);
 
 module.exports = router;
