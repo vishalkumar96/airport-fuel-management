@@ -1,6 +1,17 @@
 const ApiError = require('../utils/apiError');
 const db = require('../index');
 
+const generateToken = (async (user) => {
+    try {
+        const token = await jwt.sign(user, 'MY_SECRET_API', {
+            expiresIn: 604800,
+        });
+        return token;
+    } catch (err) {
+        return (new ApiError('Unable to generate token', 400));
+    }
+})
+
 exports.login = async (req, res, next) => {
     try {
         let {username, password} = req.body;
@@ -12,7 +23,11 @@ exports.login = async (req, res, next) => {
         const result = await db.query(connection, query);
 
         if( result && result.length) {
-            return res.status(200).json({ 'msg': 'User login successfully', status: 'success', data: []});
+            
+            const token = await generateToken(user);
+
+            return res.status(200).json({ 'msg': 'User login successfully', status: 'success', data: {token, user}});
+
         } else {
             return res.status(400).json({ 'msg': 'User not found', status: 'error'})
         }
